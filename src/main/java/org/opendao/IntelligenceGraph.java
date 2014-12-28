@@ -107,12 +107,12 @@ public class IntelligenceGraph {
                 }
             }
 
-            intelligenceGraph.commit();
             result = new MappableVertex(newVertex);
         } else {
             result = new MappableVertex("Could not find a valid schema for provided type!");
         }
 
+        intelligenceGraph.commit();
         return result;
     }
 
@@ -288,12 +288,12 @@ public class IntelligenceGraph {
                 }
             }
 
-            intelligenceGraph.commit();
             result = new MappableVertex(vertex);
         } else {
             result = new MappableVertex("Could not find a valid schema for provided type!");
         }
 
+        intelligenceGraph.commit();
         return result;
     }
 

@@ -149,10 +149,11 @@ function createVertex() {
 function updateVertex() {
 	var apiKey = $("#apiKeyInput").val();
 	var vertex = $("#vertexInput").val();
-	var key = $("#typeInput").val();
-	var value = $("#nameInput").val();
+	var key = $("#keyInput").val();
+	var value = $("#valueInput").val();
 
-	var data = {"apiKey": apiKey, "vertex": vertex, key: value};
+	var data = {"apiKey": apiKey, "vertex": vertex };
+	data[key] = value;
 
 	console.log(data);
 	$.ajax({
