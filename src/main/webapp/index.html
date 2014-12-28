@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>IntelligenceGraph</title>
+	<script src='res/min/jquery.min.js'></script>
+	<script src='res/js/api.js'></script>
+	<style>
+		body { font-family: monospace; }
+		input { font-family: monospace; }
+		.vertexDisplay { min-width: 200px; }
+		button { font-family: monospace; }
+		select { font-family: monospace; }
+	</style>
+</head>
+<body>
+	<div>
+		API Key:&nbsp;<input type="text" id="apiKeyInput">
+		<br>
+		Type:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="typeInput">
+		<br>
+		Name:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="nameInput">
+		<br>
+		<button id="createVertexButton" onclick="createVertex()">CREATE</button>
+		<br>
+		<button id="searchVerticesButton" onclick="searchVertices()">SEARCH</button>
+		<br>
+		<br>
+		<select id="resultsSelect" class="vertexDisplay" multiple></select>
+		<br>
+		<button id="displayButton" onclick="displayVertices()">DISPLAY</button>
+		<br>
+		<br>
+		<select id="displaySelect" class="vertexDisplay" onchange="displayedOnChange()" multiple></select>
+		<br>
+		<br>
+		Edge:&nbsp;
+		<br>
+		<input type="text" id="idAInput" value="idA">&nbsp;--&nbsp;<input type="text" id="idBInput" value="idB">
+		<br>
+		<button id="createEdgeButton" onclick="createEdge()">CREATE</button>
+		<br>
+		<br>
+		Vertex ID:&nbsp;
+		<br>
+		<input type="text" id="vertexInput">
+		<br>
+		<input type="text" id="keyInput" value="key">&nbsp;:&nbsp;<input type="text" id="valueInput" value="value">
+		<br>
+		<button id="updateButton" onclick="updateVertex()">NEIGHBORS</button>
+		<br>
+		<button id="neighborsButton" onclick="getNeighbors()">NEIGHBORS</button>
+		<br>
+		<select id="neighborSelect" class="vertexDisplay" multiple></select>
+		<br>
+		<button id="deleteButton" onclick="deleteVertex()">DELETE</button>
+		<br>
+	</div>
+</body>
