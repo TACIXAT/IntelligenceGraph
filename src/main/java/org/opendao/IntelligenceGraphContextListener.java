@@ -36,6 +36,7 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 			LifeTemplate.initializeGraph(intelligenceGraph);
 		}
 
+		intelligenceGraph.commit();
 		context = contextEvent.getServletContext();
 		context.setAttribute("INTELLIGENCE_GRAPH", intelligenceGraph);
 	}

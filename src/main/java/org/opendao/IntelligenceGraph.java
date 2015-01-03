@@ -44,7 +44,9 @@ public class IntelligenceGraph {
     }
 
     // createUser
-        // is admin?
+    
+
+
 
     // createGroup
 
@@ -54,10 +56,70 @@ public class IntelligenceGraph {
     // removeUserFromGroup
         // ownsGroup?
 
+    // updateAPIKey
+    @POST
+    @Path("update_api_key")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String updateAPIKey(HashMap<String, String> properties) {
+        System.out.println(properties);
+        String result = "";
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        if(!properties.containsKey("password")) {
+            result = "ERROR: Unauthorized!";
+            return result;
+        }
+
+        if(!properties.containsKey("apiKey")) {
+            result = "ERROR: Please provide a new key!";
+            return result;
+        }
+
+        if(!properties.containsKey("username")) {
+            result = "ERROR: Please provide a target user!";
+            return result;
+        }
+
+        String password = (String)properties.get("password");
+        String apiKey = (String)properties.get("apiKey");
+        String username = (String)properties.get("username");
+
+        if(!password.equals("D5A1895F31A432D3F93F056DA66503CF")) {
+            result = "ERROR: Invalid password!";
+            return result;
+        }
+
+        Iterable<Vertex> users = intelligenceGraph.query().has("type", "user").has("name", username).vertices();
+        Vertex userVertex = null;
+        if(Iterables.size(users) == 1) {
+            userVertex = users.iterator().next();
+        }
+
+        if(userVertex == null) {
+            result = "ERROR: User not found!";
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        String check = getUsername(intelligenceGraph, apiKey);
+        if(check != null) {
+            result = "ERROR: Provided API key already in use!";
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        userVertex.setProperty("apiKey", apiKey);
+        intelligenceGraph.commit();
+        result = "SUCCESS!";
+        return result;
+    }
 
     // createVertexType
 
     // createGraph
+
+    // getGraphs
 
     // deleteGraph
 
@@ -224,6 +286,7 @@ public class IntelligenceGraph {
         result.put("success", "Vertex " + vertexId + " successfully deleted!");
         return result;
     }
+
 
     // *updateVertex
     @POST
@@ -429,7 +492,6 @@ public class IntelligenceGraph {
     }
 
 
-    // getGraphs
 
     // searchGraph
     @POST
