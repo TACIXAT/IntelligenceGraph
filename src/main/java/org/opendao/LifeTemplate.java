@@ -37,7 +37,7 @@ public class LifeTemplate {
 		// EVENT
 		Vertex eventVertex = intelligenceGraph.addVertex(null);
 		eventVertex.setProperty("type", "schema");
-		eventVertex.setProperty("name", "link");
+		eventVertex.setProperty("name", "event");
 
 		// EVENT --has-- ATTR:NAME
 		intelligenceGraph.addEdge(null, eventVertex, namePropertyVertex, "has");
@@ -49,10 +49,10 @@ public class LifeTemplate {
 		intelligenceGraph.addEdge(null, eventVertex, locationVertex, "connects");
 
 		// ADMIN
-		Vertex userVertex = intelligenceGraph.addVertex(null);
-		userVertex.setProperty("type", "user");
-		userVertex.setProperty("name", "TACIXAT");
-		userVertex.setProperty("apiKey", "douggey");
+		// Vertex userVertex = intelligenceGraph.addVertex(null);
+		// userVertex.setProperty("type", "user");
+		// userVertex.setProperty("name", "TACIXAT");
+		// userVertex.setProperty("apiKey", "douggey");
 		intelligenceGraph.commit();
 		// intelligenceGraph.makePropertyKey("phoneNumber").dataType(String.class).indexed("search", Vertex.class).make();
 		// intelligenceGraph.makePropertyKey("emailAddress").dataType(String.class).indexed("search", Vertex.class).make();

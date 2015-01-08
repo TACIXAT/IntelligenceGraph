@@ -43,10 +43,135 @@ public class IntelligenceGraph {
         return hello;
     }
 
+    // getVertexTypes
+    @POST
+    @Path("get_vertex_types")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getVertexTypes(HashMap<String, String> properties) {
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        List<String> result = new ArrayList<String>();
+
+        if(!properties.containsKey("apiKey")) {
+            result.add("ERROR: Please provide an API Key!");
+            return result;
+        }
+
+        String apiKey = properties.get("apiKey");
+        String username = getUsername(intelligenceGraph, apiKey);
+
+        if(username == null) {
+            result.add("ERROR: API Key not found!");
+            return result;
+        }
+
+        Iterable<Vertex> schemaVertices = intelligenceGraph.getVertices("type", "schema");
+        
+        for(Vertex v : schemaVertices) {
+            result.add((String)v.getProperty("name"));
+        }
+
+        intelligenceGraph.commit();
+        return result;
+    }
+
+    // getTypeProperties
+    @POST
+    @Path("get_type_properties")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, String> getTypeProperties(HashMap<String, String> properties) {
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        Map<String, String> result = new HashMap<String, String>();
+
+        if(!properties.containsKey("apiKey")) {
+            result.put("ERROR", "Please provide an API Key!");
+            return result;
+        }
+
+        if(!properties.containsKey("type")) {
+            result.put("ERROR", "Please provide a vertex type!");
+            return result;
+        }
+
+        String apiKey = properties.get("apiKey");
+        String type = properties.get("type");
+        String username = getUsername(intelligenceGraph, apiKey);
+
+        if(username == null) {
+            result.put("ERROR", "API Key not found!");
+            return result;
+        }
+
+        Vertex schemaVertex = getSchemaVertexByType(intelligenceGraph, type);
+        if(schemaVertex == null) {
+            result.put("ERROR", "Could not find a valid schema for provided type!");
+            return result;
+        }
+
+        result = getValidProperties(intelligenceGraph, schemaVertex);
+        return result;
+    }
+
     // createUser
-    
+    @POST
+    @Path("create_user")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String createUser(HashMap<String, String> properties) {
+        System.out.println(properties);
+        String result = "";
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
 
+        if(!properties.containsKey("password")) {
+            result = "ERROR: Unauthorized!";
+            return result;
+        }
 
+        if(!properties.containsKey("apiKey")) {
+            result = "ERROR: Please provide an API Key!";
+            return result;
+        }
+
+        if(!properties.containsKey("username")) {
+            result = "ERROR: Please provide a target user!";
+            return result;
+        }
+
+        String password = (String)properties.get("password");
+        String apiKey = (String)properties.get("apiKey");
+        String username = (String)properties.get("username");
+
+        if(!password.equals("D5A1895F31A432D3F93F056DA66503CF")) {
+            result = "ERROR: Invalid password!";
+            return result;
+        }
+
+        Iterable<Vertex> users = intelligenceGraph.query().has("type", "user").has("name", username).vertices();
+        if(Iterables.size(users) > 0) {
+            result = "ERROR: A user already exists with this name!";
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        String check = getUsername(intelligenceGraph, apiKey);
+        if(check != null) {
+            result = "ERROR: Provided API key already in use!";
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        Vertex userVertex = intelligenceGraph.addVertex(null);
+        userVertex.setProperty("type", "user");
+        userVertex.setProperty("name", username);
+        userVertex.setProperty("apiKey", apiKey);
+
+        intelligenceGraph.commit();
+        result = "SUCCESS!";
+        return result;
+    }    
 
     // createGroup
 
@@ -161,7 +286,7 @@ public class IntelligenceGraph {
             newVertex.setProperty("owner", username);
             newVertex.setProperty("type", vertexType);
 
-            Map<String, String> validProperties = getValidProperties(target);
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
@@ -191,7 +316,7 @@ public class IntelligenceGraph {
         return username;
     }
 
-    Map<String, String> getValidProperties(Vertex schemaVertex) {
+    Map<String, String> getValidProperties(TitanGraph intelligenceGraph, Vertex schemaVertex) {
         Map<String, String> validProperties = new HashMap<String, String>();
         Iterable<Vertex> propertyVertices = schemaVertex.getVertices(Direction.OUT, "has");
         
@@ -203,6 +328,7 @@ public class IntelligenceGraph {
             }
         }
 
+        intelligenceGraph.commit();
         return validProperties;
     }
 
@@ -343,7 +469,7 @@ public class IntelligenceGraph {
         Vertex target = getSchemaVertexByType(intelligenceGraph, vertexType);
 
         if(target != null) {
-            Map<String, String> validProperties = getValidProperties(target);
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
@@ -531,7 +657,7 @@ public class IntelligenceGraph {
             vertexQuery.has("owner", username);
             vertexQuery.has("type", vertexType);
 
-            Map<String, String> validProperties = getValidProperties(target);
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
