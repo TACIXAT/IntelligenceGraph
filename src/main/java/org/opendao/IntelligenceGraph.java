@@ -44,6 +44,7 @@ public class IntelligenceGraph {
     }
 
     // getVertexTypes
+    // requires: apiKey
     @POST
     @Path("get_vertex_types")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -77,6 +78,7 @@ public class IntelligenceGraph {
     }
 
     // getTypeProperties
+    // requires: apiKey, type
     @POST
     @Path("get_type_properties")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -116,6 +118,7 @@ public class IntelligenceGraph {
     }
 
     // createUser
+    // requires: password, apiKey, username
     @POST
     @Path("create_user")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -182,6 +185,7 @@ public class IntelligenceGraph {
         // ownsGroup?
 
     // updateAPIKey
+    // requires: password, apiKey, username
     @POST
     @Path("update_api_key")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -249,6 +253,7 @@ public class IntelligenceGraph {
     // deleteGraph
 
     // createVertex
+    // requires: apiKey, type, properties...
     @POST
     @Path("create_vertex")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -348,6 +353,7 @@ public class IntelligenceGraph {
     }
 
     // *deleteVertex
+    // requires: apiKey, vertex
     @POST
     @Path("delete_vertex")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -415,6 +421,7 @@ public class IntelligenceGraph {
 
 
     // *updateVertex
+    // requires: apiKey, vertex, properties...
     @POST
     @Path("update_vertex")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -487,6 +494,7 @@ public class IntelligenceGraph {
     }
 
     // linkVertices
+    // requires: apiKey, vertexA, vertexB
     @POST
     @Path("create_edge")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -620,6 +628,7 @@ public class IntelligenceGraph {
 
 
     // searchGraph
+    // requires: apiKey, type, properties...
     @POST
     @Path("search_vertices")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -681,6 +690,7 @@ public class IntelligenceGraph {
     }
 
     // getVertexNeighbors
+    // requires: apiKey, vertex
     @POST
     @Path("get_neighbors")
     @Consumes(MediaType.APPLICATION_JSON)
