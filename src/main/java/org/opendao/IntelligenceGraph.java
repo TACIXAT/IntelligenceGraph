@@ -625,8 +625,6 @@ public class IntelligenceGraph {
         return result;
     }
 
-
-
     // searchGraph
     // requires: apiKey, type, properties...
     @POST
