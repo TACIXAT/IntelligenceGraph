@@ -287,11 +287,11 @@ public class IntelligenceGraph {
         Vertex target = getSchemaVertexByType(intelligenceGraph, vertexType);
 
         if(target != null) {
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
+
             Vertex newVertex = intelligenceGraph.addVertex(null);
             newVertex.setProperty("owner", username);
             newVertex.setProperty("type", vertexType);
-
-            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
@@ -660,11 +660,11 @@ public class IntelligenceGraph {
         Vertex target = getSchemaVertexByType(intelligenceGraph, vertexType);
 
         if(target != null) {
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
+            
             Query vertexQuery = intelligenceGraph.query();
             vertexQuery.has("owner", username);
             vertexQuery.has("type", vertexType);
-
-            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
