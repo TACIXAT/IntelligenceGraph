@@ -363,8 +363,8 @@ public class IntelligenceGraph {
         TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
 
         if(!properties.containsKey("apiKey")) {
-            result.put("status", "error");
-            result.put("error", "Please provide an API Key!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Please provide an API Key!");
             return result;
         }
 
@@ -372,14 +372,14 @@ public class IntelligenceGraph {
         String username = getUsername(intelligenceGraph, apiKey);
 
         if(username == null) {
-            result.put("status", "error");
-            result.put("error", "API Key not found!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "API Key not found!");
             return result;
         }
 
         if(!properties.containsKey("vertex")) {
-            result.put("status", "error");
-            result.put("error", "You must provide a vertex to delete!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "You must provide a vertex to delete!");
             return result;
         }
 
@@ -388,8 +388,8 @@ public class IntelligenceGraph {
         try {
             vertexId = Long.parseLong(properties.get("vertex"));
         } catch (NumberFormatException e) {
-            result.put("status", "error");
-            result.put("error", "Problem parsing vertex IDs!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Problem parsing vertex IDs!");
             return result;
         }
 
@@ -401,8 +401,8 @@ public class IntelligenceGraph {
         }
 
         if(vertex == null) {
-            result.put("status", "error");
-            result.put("error", "Vertex not found!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Vertex not found!");
             intelligenceGraph.commit();
             return result;
         }
@@ -414,8 +414,9 @@ public class IntelligenceGraph {
         intelligenceGraph.removeVertex(vertex);
         intelligenceGraph.commit();
 
-        result.put("status", "success");
-        result.put("success", "Vertex " + vertexId + " successfully deleted!");
+        result.put("status", "SUCCESS");
+        result.put("SUCCESS", "Vertex " + vertexId + " successfully deleted!");
+        result.put("id", vertexId.toString());
         return result;
     }
 
@@ -504,8 +505,8 @@ public class IntelligenceGraph {
         TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
 
         if(!properties.containsKey("apiKey")) {
-            result.put("status", "error");
-            result.put("error", "Please provide an API Key!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Please provide an API Key!");
             return result;
         }
 
@@ -513,14 +514,14 @@ public class IntelligenceGraph {
         String username = getUsername(intelligenceGraph, apiKey);
 
         if(username == null) {
-            result.put("status", "error");
-            result.put("error", "API Key not found!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "API Key not found!");
             return result;
         }
 
         if(!properties.containsKey("vertexA") || !properties.containsKey("vertexB")) {
-            result.put("status", "error");
-            result.put("error", "You must provide 2 vertices to link!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "You must provide 2 vertices to link!");
             return result;
         }
 
@@ -530,8 +531,8 @@ public class IntelligenceGraph {
             idA = Long.parseLong(properties.get("vertexA"));
             idB = Long.parseLong(properties.get("vertexB"));
         } catch (NumberFormatException e) {
-            result.put("status", "error");
-            result.put("error", "Problem parsing vertex IDs!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Problem parsing vertex IDs!");
             return result;
         }
 
@@ -550,7 +551,7 @@ public class IntelligenceGraph {
         }
 
         if(vertexA == null || vertexB == null) {
-            result.put("status", "error");
+            result.put("status", "ERROR");
             String error;
             int status = 0;
 
@@ -572,7 +573,7 @@ public class IntelligenceGraph {
                     break;
             }
 
-            result.put("error", error);
+            result.put("ERROR", error);
             intelligenceGraph.commit();
             return result;
         }
@@ -596,8 +597,8 @@ public class IntelligenceGraph {
         }
 
         if(!connects) {
-            result.put("status", "error");
-            result.put("error", "A connection between vertices of these types is not permitted!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "A connection between vertices of these types is not permitted!");
             intelligenceGraph.commit();
             return result;
         }
@@ -612,16 +613,16 @@ public class IntelligenceGraph {
         }
 
         if(connects) {
-            result.put("status", "error");
-            result.put("error", "Edge already exists between these vertices!");
+            result.put("status", "ERROR");
+            result.put("ERROR", "Edge already exists between these vertices!");
             intelligenceGraph.commit();
             return result;
         }
 
         intelligenceGraph.addEdge(null, vertexA, vertexB, "connectedTo");
         intelligenceGraph.commit();
-        result.put("status", "success");
-        result.put("success", "Edge: [" + idA + " -- " + idB + "] successfully created!");
+        result.put("status", "SUCCESS");
+        result.put("SUCCESS", "Edge: [" + idA + " -- " + idB + "] successfully created!");
         return result;
     }
 
