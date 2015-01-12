@@ -623,6 +623,8 @@ public class IntelligenceGraph {
         intelligenceGraph.commit();
         result.put("status", "SUCCESS");
         result.put("SUCCESS", "Edge: [" + idA + " -- " + idB + "] successfully created!");
+        result.put("vertexA", idA.toString());
+        result.put("vertexB", idB.toString());
         return result;
     }
 
@@ -689,7 +691,7 @@ public class IntelligenceGraph {
     }
 
     // getVertexNeighbors
-    // requires: apiKey, vertex
+    // requires: apiKey, vertex, direction
     @POST
     @Path("get_neighbors")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -717,6 +719,16 @@ public class IntelligenceGraph {
             return results;
         }
 
+        Direction direction = Direction.BOTH;
+        if(properties.containsKey("direction")) {
+            String dir = properties.get("direction").toLowerCase();
+            if(dir.equals("in")) {
+                direction = Direction.IN;
+            } else if(dir.equals("out")) {
+                direction = Direction.OUT;
+            }
+        }
+
         Long vertexId;
 
         try {
@@ -738,11 +750,13 @@ public class IntelligenceGraph {
             return results;
         }
 
-        Iterable<Vertex> vertices = vertex.getVertices(Direction.BOTH, "connectedTo"); 
+        Iterable<Vertex> vertices = vertex.getVertices(direction, "connectedTo"); 
 
         for(Vertex v : vertices) {
             results.add(new MappableVertex(v));
         }
+
+        results.add(new MappableVertex(vertex));
 
         intelligenceGraph.commit();
         return results;
