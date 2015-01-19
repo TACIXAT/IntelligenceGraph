@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.Date;
+
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import java.lang.Iterable;
 import java.lang.NumberFormatException;
@@ -258,7 +262,7 @@ public class IntelligenceGraph {
     @Path("create_vertex")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public MappableVertex createVertex(HashMap properties) {
+    public MappableVertex createVertex(HashMap<String, String> properties) {
         System.out.println(properties);
         MappableVertex result = null;
         TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
@@ -295,7 +299,14 @@ public class IntelligenceGraph {
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
-                    newVertex.setProperty(key, (String)properties.get(key));
+                    String strValue = properties.get(key);
+                    String dataType = validProperties.get(key);
+                    Object value = convertProperty(dataType, strValue);
+                    
+                    if(value == null)
+                        continue;
+
+                    newVertex.setProperty(key, value);
                 }
             }
 
@@ -306,6 +317,23 @@ public class IntelligenceGraph {
 
         intelligenceGraph.commit();
         return result;
+    }
+
+    Object convertProperty(String dataType, String value) {
+        if(dataType.equals("text")) {
+            return value;
+        } else if (dataType.equals("date")) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date date = format.parse(value);
+                long timestamp = date.getTime();
+                return new Long(timestamp);
+            } catch(ParseException e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     String getUsername(TitanGraph intelligenceGraph, String apiKey) {
@@ -481,7 +509,14 @@ public class IntelligenceGraph {
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
-                    vertex.setProperty(key, (String)properties.get(key));
+                    String strValue = properties.get(key);
+                    String dataType = validProperties.get(key);
+                    Object value = convertProperty(dataType, strValue);
+                    
+                    if(value == null)
+                        continue;
+
+                    vertex.setProperty(key, value);
                 }
             }
 
@@ -671,8 +706,14 @@ public class IntelligenceGraph {
             
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
-                    String value = (String)properties.get(key);
-                    if(!value.equals("")) {
+                    String strValue = (String)properties.get(key);
+                    if(!strValue.equals("")) {
+                        String dataType = validProperties.get(key);
+                        Object value = convertProperty(dataType, strValue);
+                        
+                        if(value == null)
+                            continue;
+
                         vertexQuery.has(key, value);
                     }
                 }

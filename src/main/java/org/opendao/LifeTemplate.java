@@ -10,6 +10,7 @@ public class LifeTemplate {
 		intelligenceGraph.makePropertyKey("type").dataType(String.class).make();
 		intelligenceGraph.makePropertyKey("name").dataType(String.class).make();
 		intelligenceGraph.makePropertyKey("owner").dataType(String.class).make();
+		intelligenceGraph.makePropertyKey("born").dataType(Long.class).make();
 		intelligenceGraph.makePropertyKey("apiKey").dataType(String.class).cardinality(Cardinality.SINGLE).make();
 		
 		// PERSON
@@ -21,10 +22,19 @@ public class LifeTemplate {
 		Vertex namePropertyVertex = intelligenceGraph.addVertex(null);
 		namePropertyVertex.setProperty("type", "property");
 		namePropertyVertex.setProperty("name", "name");
-		namePropertyVertex.setProperty("dataType", "string");
+		namePropertyVertex.setProperty("dataType", "text");
+
+		// ATTR:BORN
+		Vertex bornPropertyVertex = intelligenceGraph.addVertex(null);
+		bornPropertyVertex.setProperty("type", "property");
+		bornPropertyVertex.setProperty("name", "born");
+		bornPropertyVertex.setProperty("dataType", "date");
 
 		// PERSON --has-- ATTR:NAME
 		intelligenceGraph.addEdge(null, personVertex, namePropertyVertex, "has");
+
+		// PERSON --has-- ATTR:NAME
+		intelligenceGraph.addEdge(null, personVertex, bornPropertyVertex, "has");
 
 		// LOCATION 
 		Vertex locationVertex = intelligenceGraph.addVertex(null);
