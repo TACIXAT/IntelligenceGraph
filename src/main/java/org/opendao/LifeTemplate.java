@@ -50,7 +50,7 @@ public class LifeTemplate {
 		Vertex geoPropertyVertex = intelligenceGraph.addVertex(null);
 		geoPropertyVertex.setProperty("type", "property");
 		geoPropertyVertex.setProperty("name", "geoloc");
-		geoPropertyVertex.setProperty("dataType", "geo");
+		geoPropertyVertex.setProperty("dataType", "geopoint");
 
 		// LOCATION --has-- ATTR:NAME
 		intelligenceGraph.addEdge(null, locationVertex, namePropertyVertex, "has");

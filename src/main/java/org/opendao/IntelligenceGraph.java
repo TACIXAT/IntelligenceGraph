@@ -34,6 +34,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Query;
 import com.tinkerpop.blueprints.Direction;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.attribute.Geoshape;
+import com.thinkaurelius.titan.core.attribute.Geo;
 
 @Path("/utility")
 public class IntelligenceGraph {
@@ -329,6 +331,36 @@ public class IntelligenceGraph {
                 long timestamp = date.getTime();
                 return new Long(timestamp);
             } catch(ParseException e) {
+                return null;
+            }
+        } else if(dataType.equals("geopoint")) {
+            String [] split = value.split(",");
+            if(split.length != 2) {
+                return null;
+            }
+
+            try {
+                Float latitude = Float.parseFloat(split[0]);
+                Float longitude = Float.parseFloat(split[1]);
+                Geoshape geoPoint = Geoshape.point(latitude, longitude);
+                return geoPoint;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if(dataType.equals("geocircle")) {
+            String [] split = value.split(",");
+            if(split.length != 3) {
+                return null;
+            }
+
+            try {
+                Float latitude = Float.parseFloat(split[0]);
+                Float longitude = Float.parseFloat(split[1]);
+                Integer radius = Integer.parseInt(split[2]);
+
+                Geoshape geoCircle = Geoshape.circle(latitude, longitude, radius);
+                return geoCircle;
+            } catch (NumberFormatException e) {
                 return null;
             }
         }
@@ -709,12 +741,18 @@ public class IntelligenceGraph {
                     String strValue = (String)properties.get(key);
                     if(!strValue.equals("")) {
                         String dataType = validProperties.get(key);
+                        if(dataType.equals("geopoint"))
+                            dataType = "geocircle";
+
                         Object value = convertProperty(dataType, strValue);
                         
                         if(value == null)
                             continue;
 
-                        vertexQuery.has(key, value);
+                        if(dataType.equals("geocircle"))
+                            vertexQuery.has(key, Geo.WITHIN, value);
+                        else
+                            vertexQuery.has(key, value);
                     }
                 }
             }
