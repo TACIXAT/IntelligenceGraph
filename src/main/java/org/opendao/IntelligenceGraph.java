@@ -349,6 +349,7 @@ public class IntelligenceGraph {
             }
         } else if(dataType.equals("geocircle")) {
             String [] split = value.split(",");
+            System.out.println(split);
             if(split.length != 3) {
                 return null;
             }
@@ -356,8 +357,10 @@ public class IntelligenceGraph {
             try {
                 Float latitude = Float.parseFloat(split[0]);
                 Float longitude = Float.parseFloat(split[1]);
-                Integer radius = Integer.parseInt(split[2]);
-
+                Float radius = Float.parseFloat(split[2]);
+                System.out.println(latitude);
+                System.out.println(longitude);
+                System.out.println(radius);
                 Geoshape geoCircle = Geoshape.circle(latitude, longitude, radius);
                 return geoCircle;
             } catch (NumberFormatException e) {
@@ -410,6 +413,81 @@ public class IntelligenceGraph {
         }
         intelligenceGraph.commit();
         return target;
+    }
+
+    // searchGraph
+    // requires: apiKey, type, properties...
+    @POST
+    @Path("search_vertices")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<MappableVertex> searchVertices(HashMap properties) {
+        System.out.println(properties);
+        List<MappableVertex> results = new ArrayList<MappableVertex>();
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        if(!properties.containsKey("apiKey")) {
+            results.add(new MappableVertex("Please provide an API Key!"));
+            return results;
+        }
+
+        String apiKey = (String)properties.get("apiKey");
+        String username = getUsername(intelligenceGraph, apiKey);
+
+        if(username == null) {
+            results.add(new MappableVertex("API Key not found!"));
+            return results;
+        }
+
+        if(!properties.containsKey("type")) {
+            results.add(new MappableVertex("Please provide a vertex type!"));
+            return results;
+        }
+
+        String vertexType = (String)properties.get("type");
+        System.out.println(vertexType);
+        
+        Vertex target = getSchemaVertexByType(intelligenceGraph, vertexType);
+
+        if(target != null) {
+            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
+            
+            Query vertexQuery = intelligenceGraph.query();
+            vertexQuery.has("owner", username);
+            vertexQuery.has("type", vertexType);
+            
+            for(String key : (Set<String>)properties.keySet()) {
+                if(validProperties.containsKey(key)) {
+                    String strValue = (String)properties.get(key);
+                    if(!strValue.equals("")) {
+                        String dataType = validProperties.get(key);
+                        if(dataType.equals("geopoint"))
+                            dataType = "geocircle";
+
+                        Object value = convertProperty(dataType, strValue);
+                        System.out.println(key);
+                        System.out.println(value);
+                        if(value == null)
+                            continue;
+
+                        if(dataType.equals("geocircle"))
+                            vertexQuery.has(key, Geo.WITHIN, value);
+                        else
+                            vertexQuery.has(key, value);
+                    }
+                }
+            }
+
+            Iterable<Vertex> vertices = vertexQuery.vertices();
+            for(Vertex v : vertices) {
+                results.add(new MappableVertex(v));
+            }
+        } else {
+            results.add(new MappableVertex("Could not find a valid schema for provided type!"));
+        }
+
+        intelligenceGraph.commit();
+        return results;
     }
 
     // *deleteVertex
@@ -693,80 +771,6 @@ public class IntelligenceGraph {
         result.put("vertexA", idA.toString());
         result.put("vertexB", idB.toString());
         return result;
-    }
-
-    // searchGraph
-    // requires: apiKey, type, properties...
-    @POST
-    @Path("search_vertices")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<MappableVertex> searchVertices(HashMap properties) {
-        System.out.println(properties);
-        List<MappableVertex> results = new ArrayList<MappableVertex>();
-        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
-
-        if(!properties.containsKey("apiKey")) {
-            results.add(new MappableVertex("Please provide an API Key!"));
-            return results;
-        }
-
-        String apiKey = (String)properties.get("apiKey");
-        String username = getUsername(intelligenceGraph, apiKey);
-
-        if(username == null) {
-            results.add(new MappableVertex("API Key not found!"));
-            return results;
-        }
-
-        if(!properties.containsKey("type")) {
-            results.add(new MappableVertex("Please provide a vertex type!"));
-            return results;
-        }
-
-        String vertexType = (String)properties.get("type");
-        System.out.println(vertexType);
-        
-        Vertex target = getSchemaVertexByType(intelligenceGraph, vertexType);
-
-        if(target != null) {
-            Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
-            
-            Query vertexQuery = intelligenceGraph.query();
-            vertexQuery.has("owner", username);
-            vertexQuery.has("type", vertexType);
-            
-            for(String key : (Set<String>)properties.keySet()) {
-                if(validProperties.containsKey(key)) {
-                    String strValue = (String)properties.get(key);
-                    if(!strValue.equals("")) {
-                        String dataType = validProperties.get(key);
-                        if(dataType.equals("geopoint"))
-                            dataType = "geocircle";
-
-                        Object value = convertProperty(dataType, strValue);
-                        
-                        if(value == null)
-                            continue;
-
-                        if(dataType.equals("geocircle"))
-                            vertexQuery.has(key, Geo.WITHIN, value);
-                        else
-                            vertexQuery.has(key, value);
-                    }
-                }
-            }
-
-            Iterable<Vertex> vertices = vertexQuery.vertices();
-            for(Vertex v : vertices) {
-                results.add(new MappableVertex(v));
-            }
-        } else {
-            results.add(new MappableVertex("Could not find a valid schema for provided type!"));
-        }
-
-        intelligenceGraph.commit();
-        return results;
     }
 
     // getVertexNeighbors
