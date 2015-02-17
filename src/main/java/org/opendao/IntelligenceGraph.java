@@ -620,8 +620,9 @@ public class IntelligenceGraph {
             for(String key : (Set<String>)properties.keySet()) {
                 if(validProperties.containsKey(key)) {
                     String strValue = properties.get(key);
-                    System.out.println(strValue);
+                    System.out.println(key + ":" + strValue);
                     if(strValue == "") {
+                        System.out.println("REMOVED: " + key);
                         vertex.removeProperty(key);
                         continue;
                     }
