@@ -734,6 +734,9 @@ public class IntelligenceGraph {
         String typeA = vertexA.getProperty("type");
         String typeB = vertexB.getProperty("type");
 
+        result.put("typeA", typeA);
+        result.put("typeB", typeB);
+
         Vertex schemaA = getSchemaVertexByType(intelligenceGraph, typeA);
         Vertex schemaB = getSchemaVertexByType(intelligenceGraph, typeB);
         Iterable<Vertex> neighborsSchemaA = schemaA.getVertices(Direction.OUT, "connects");
@@ -776,8 +779,8 @@ public class IntelligenceGraph {
         intelligenceGraph.commit();
         result.put("status", "SUCCESS");
         result.put("SUCCESS", "Edge: [" + idA + " -- " + idB + "] successfully created!");
-        result.put("vertexA", idA.toString());
-        result.put("vertexB", idB.toString());
+        // result.put("vertexA", idA.toString());
+        // result.put("vertexB", idB.toString());
         return result;
     }
 
