@@ -545,6 +545,7 @@ public class IntelligenceGraph {
             return result;
         }
 
+        String vertexType = vertex.getProperty("type");
         Iterable<Edge> edges = vertex.getEdges(Direction.BOTH);
         for(Edge e : edges) {
             intelligenceGraph.removeEdge(e);
@@ -554,7 +555,7 @@ public class IntelligenceGraph {
 
         result.put("status", "SUCCESS");
         result.put("SUCCESS", "Vertex " + vertexId + " successfully deleted!");
-        result.put("id", vertexId.toString());
+        result.put("type", vertexType);
         return result;
     }
 
