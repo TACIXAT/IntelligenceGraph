@@ -900,7 +900,8 @@ public class IntelligenceGraph {
         connects = false;
         Edge targetEdge = null;
         for(Edge e : edgesA) {
-            Vertex v = e.getVertex(Direction.OUT);
+            Vertex v = e.getVertex(Direction.IN);
+            System.out.println(e);
             System.out.println("Edge loop: ");
             System.out.println(v.getId());
             System.out.println(vertexB.getId());
