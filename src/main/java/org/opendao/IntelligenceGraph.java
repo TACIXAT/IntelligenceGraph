@@ -490,7 +490,7 @@ public class IntelligenceGraph {
         return results;
     }
 
-    // *deleteVertex
+    // deleteVertex
     // requires: apiKey, vertex
     @POST
     @Path("delete_vertex")
@@ -560,7 +560,7 @@ public class IntelligenceGraph {
     }
 
 
-    // *updateVertex
+    // updateVertex
     // requires: apiKey, vertex, properties...
     @POST
     @Path("update_vertex")
@@ -779,6 +779,146 @@ public class IntelligenceGraph {
         intelligenceGraph.commit();
         result.put("status", "SUCCESS");
         result.put("SUCCESS", "Edge: [" + idA + " -- " + idB + "] successfully created!");
+        // result.put("vertexA", idA.toString());
+        // result.put("vertexB", idB.toString());
+        return result;
+    }
+
+    // unlinkVertices
+    // requires: apiKey, vertexA, vertexB
+    @POST
+    @Path("delete_edge")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, String> deleteEdge(Map<String, String> properties) {
+        Map<String, String> result = new HashMap<String, String>();
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        if(!properties.containsKey("apiKey")) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "Please provide an API Key!");
+            return result;
+        }
+
+        String apiKey = (String)properties.get("apiKey");
+        String username = getUsername(intelligenceGraph, apiKey);
+
+        if(username == null) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "API Key not found!");
+            return result;
+        }
+
+        if(!properties.containsKey("vertexA") || !properties.containsKey("vertexB")) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "You must provide 2 vertices to link!");
+            return result;
+        }
+
+        Long idA, idB;
+
+        try {
+            idA = Long.parseLong(properties.get("vertexA"));
+            idB = Long.parseLong(properties.get("vertexB"));
+        } catch (NumberFormatException e) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "Problem parsing vertex IDs!");
+            return result;
+        }
+
+        result.put("vertexA", idA.toString());
+        result.put("vertexB", idB.toString());
+
+        Vertex vertexA = intelligenceGraph.getVertex(idA);
+        Vertex vertexB = intelligenceGraph.getVertex(idB);
+
+        if(vertexA != null && !vertexA.getProperty("owner").equals(username)) {
+            vertexA = null;
+        }
+
+        if(vertexB != null && !vertexB.getProperty("owner").equals(username)) {
+            vertexB = null;
+        }
+
+        if(vertexA == null || vertexB == null) {
+            result.put("status", "ERROR");
+            String error;
+            int status = 0;
+
+            status += vertexA == null ? 1 : 0;
+            status += vertexB == null ? 2 : 0;
+
+            switch(status) {
+                case 1:
+                    error = "The first vertex was not found!";
+                    break;
+                case 2:
+                    error = "The second vertex was not found!";
+                    break;
+                case 3:
+                    error = "Neither vertex was found!";
+                    break;
+                default:
+                    error = "Please contact the administrator with this message: create_edge default case hit!";
+                    break;
+            }
+
+            result.put("ERROR", error);
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        String typeA = vertexA.getProperty("type");
+        String typeB = vertexB.getProperty("type");
+
+        result.put("typeA", typeA);
+        result.put("typeB", typeB);
+
+        Vertex schemaA = getSchemaVertexByType(intelligenceGraph, typeA);
+        Vertex schemaB = getSchemaVertexByType(intelligenceGraph, typeB);
+        Iterable<Vertex> neighborsSchemaA = schemaA.getVertices(Direction.OUT, "connects");
+        boolean connects = false;
+        System.out.println(schemaA.getId() + ":" + schemaA.getProperty("name"));
+        System.out.println(schemaB.getId() + ":" + schemaB.getProperty("name"));
+        for(Vertex v : neighborsSchemaA) {
+            System.out.println("\t" + v.getId() + ":" + v.getProperty("name"));
+            if(v.getId().equals(schemaB.getId())) {
+                System.out.println("Match!");
+                connects = true;
+                break;
+            }
+        }
+
+        if(!connects) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "A connection between vertices of these types is not permitted!");
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        Iterable<Edge> edgesA = vertexA.getEdges(Direction.OUT, "connectedTo");
+        connects = false;
+        Edge targetEdge = null;
+        for(Edge e : edgesA) {
+            Vertex v = e.getVertex(Direction.OUT);
+            if(v.getId().equals(vertexB.getId())) {
+                targetEdge = e;
+                connects = true;
+                break;
+            }
+        }
+
+        if(!connects || targetEdge == null) {
+            result.put("status", "ERROR");
+            result.put("ERROR", "An edge does not exist between these vertices!");
+            intelligenceGraph.commit();
+            return result;
+        }
+
+        intelligenceGraph.removeEdge(targetEdge);
+        intelligenceGraph.commit();
+        result.put("status", "SUCCESS");
+        result.put("SUCCESS", "Edge: [" + idA + " -/- " + idB + "] successfully removed!");
         // result.put("vertexA", idA.toString());
         // result.put("vertexB", idB.toString());
         return result;
