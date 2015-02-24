@@ -901,7 +901,11 @@ public class IntelligenceGraph {
         Edge targetEdge = null;
         for(Edge e : edgesA) {
             Vertex v = e.getVertex(Direction.OUT);
+            System.out.println("Edge loop: ");
+            System.out.println(v.getId());
+            System.out.println(vertexB.getId());
             if(v.getId().equals(vertexB.getId())) {
+                System.out.println("Found!");
                 targetEdge = e;
                 connects = true;
                 break;
