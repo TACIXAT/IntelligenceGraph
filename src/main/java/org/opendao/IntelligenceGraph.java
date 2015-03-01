@@ -473,8 +473,8 @@ public class IntelligenceGraph {
 
                         if(dataType.equals("geocircle"))
                             vertexQuery.has(key, Geo.WITHIN, value);
-                        else if(key.equals(notes))
-                            vertexQuery.(key, Text.CONTAINS, value);
+                        else if(key.equals("notes"))
+                            vertexQuery.has(key, Text.CONTAINS, value);
                         else
                             vertexQuery.has(key, value);
                     }
