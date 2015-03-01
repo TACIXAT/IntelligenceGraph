@@ -108,19 +108,19 @@ public class LifeTemplate {
 		// intelligenceGraph.makePropertyKey("notes").dataType(String.class).make();
 
 		// ATTR:NOTES
-		Vertex notesPropertyVertex = intelligenceGraph.addVertex(null);
-		notesPropertyVertex.setProperty("type", "property");
-		notesPropertyVertex.setProperty("name", "notes");
-		notesPropertyVertex.setProperty("dataType", "text");
+		// Vertex notesPropertyVertex = intelligenceGraph.addVertex(null);
+		// notesPropertyVertex.setProperty("type", "property");
+		// notesPropertyVertex.setProperty("name", "notes");
+		// notesPropertyVertex.setProperty("dataType", "text");
 
-		Vertex personVertex = intelligenceGraph.query()
-								.has("type", "schema")
-								.has("name", "person")
-								.vertices().iterator().next();
+		// Vertex personVertex = intelligenceGraph.query()
+		// 						.has("type", "schema")
+		// 						.has("name", "person")
+		// 						.vertices().iterator().next();
 
-		// PERSON --has-- ATTR:NOTES
-		intelligenceGraph.addEdge(null, personVertex, notesPropertyVertex, "has");
-		intelligenceGraph.commit();
+		// // PERSON --has-- ATTR:NOTES
+		// intelligenceGraph.addEdge(null, personVertex, notesPropertyVertex, "has");
+		// intelligenceGraph.commit();
 		return;
 	}
 }
