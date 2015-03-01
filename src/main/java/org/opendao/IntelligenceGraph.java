@@ -36,6 +36,7 @@ import com.tinkerpop.blueprints.Direction;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.attribute.Geoshape;
 import com.thinkaurelius.titan.core.attribute.Geo;
+import com.thinkaurelius.titan.core.attribute.Text;
 
 @Path("/utility")
 public class IntelligenceGraph {
@@ -472,6 +473,8 @@ public class IntelligenceGraph {
 
                         if(dataType.equals("geocircle"))
                             vertexQuery.has(key, Geo.WITHIN, value);
+                        else if(key.equals(notes))
+                            vertexQuery.(key, Text.CONTAINS, value);
                         else
                             vertexQuery.has(key, value);
                     }
