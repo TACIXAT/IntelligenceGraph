@@ -35,11 +35,20 @@ public class LifeTemplate {
 		bornPropertyVertex.setProperty("name", "born");
 		bornPropertyVertex.setProperty("dataType", "date");
 
+		// ATTR:NOTES
+		Vertex notesPropertyVertex = intelligenceGraph.addVertex(null);
+		notesPropertyVertex.setProperty("type", "property");
+		notesPropertyVertex.setProperty("name", "notes");
+		notesPropertyVertex.setProperty("dataType", "text");
+
 		// PERSON --has-- ATTR:NAME
 		intelligenceGraph.addEdge(null, personVertex, namePropertyVertex, "has");
 
 		// PERSON --has-- ATTR:BORN
 		intelligenceGraph.addEdge(null, personVertex, bornPropertyVertex, "has");
+
+		// PERSON --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, personVertex, notesPropertyVertex, "has");		
 
 		// LOCATION 
 		Vertex locationVertex = intelligenceGraph.addVertex(null);
@@ -96,22 +105,22 @@ public class LifeTemplate {
 	}
 
 	public static void updateGraph(TitanGraph intelligenceGraph) {
-		// intelligenceGraph.makePropertyKey("date").dataType(Long.class).make();
+		intelligenceGraph.makePropertyKey("notes").dataType(String.class).make();
 
-		// // ATTR:DATE
-		// Vertex datePropertyVertex = intelligenceGraph.addVertex(null);
-		// datePropertyVertex.setProperty("type", "property");
-		// datePropertyVertex.setProperty("name", "date");
-		// datePropertyVertex.setProperty("dataType", "date");
+		// ATTR:NOTES
+		Vertex notesPropertyVertex = intelligenceGraph.addVertex(null);
+		notesPropertyVertex.setProperty("type", "property");
+		notesPropertyVertex.setProperty("name", "notes");
+		notesPropertyVertex.setProperty("dataType", "text");
 
-		// Vertex eventVertex = intelligenceGraph.query()
-		// 						.has("type", "schema")
-		// 						.has("name", "event")
-		// 						.vertices().iterator().next();
+		Vertex personVertex = intelligenceGraph.query()
+								.has("type", "schema")
+								.has("name", "person")
+								.vertices().iterator().next();
 
-		// // EVENT --has-- ATTR:NAME
-		// intelligenceGraph.addEdge(null, eventVertex, datePropertyVertex, "has");
-		// intelligenceGraph.commit();
+		// PERSON --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, personVertex, notesPropertyVertex, "has");
+		intelligenceGraph.commit();
 		return;
 	}
 }
