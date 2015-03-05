@@ -108,25 +108,25 @@ public class LifeTemplate {
 		// intelligenceGraph.makePropertyKey("notes").dataType(String.class).make();
 
 		// ATTR:NOTES
-		Vertex notesPropertyVertex = intelligenceGraph.addVertex(null);
-		notesPropertyVertex.setProperty("type", "property");
-		notesPropertyVertex.setProperty("name", "notes");
-		notesPropertyVertex.setProperty("dataType", "text");
+		System.out.println("NOTES COUNT: " + intelligenceGraph.query()
+								.has("type", "property")
+								.has("name", "notes")
+								.count());
 
-		Vertex locationVertex = intelligenceGraph.query()
-								.has("type", "schema")
-								.has("name", "location")
-								.vertices().iterator().next();
+		// Vertex locationVertex = intelligenceGraph.query()
+		// 						.has("type", "schema")
+		// 						.has("name", "location")
+		// 						.vertices().iterator().next();
 
-		Vertex eventVertex = intelligenceGraph.query()
-								.has("type", "schema")
-								.has("name", "event")
-								.vertices().iterator().next();
+		// Vertex eventVertex = intelligenceGraph.query()
+		// 						.has("type", "schema")
+		// 						.has("name", "event")
+		// 						.vertices().iterator().next();
 
-		// PERSON --has-- ATTR:NOTES
-		intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
-		intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
-		intelligenceGraph.commit();
+		// // PERSON --has-- ATTR:NOTES
+		// intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
+		// intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
+		// intelligenceGraph.commit();
 		return;
 	}
 }
