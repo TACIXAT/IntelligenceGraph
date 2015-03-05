@@ -995,19 +995,19 @@ public class IntelligenceGraph {
             String vertexType = vertex.getProperty("type");
 
             Direction direction = Direction.BOTH;
-            if(targetType.equals("person") && vertexType.equals("event")) {
-                direction = Direction.IN;
-            } else if(targetType.equals("event") && vertexType.equals("person")) {
-                direction = Direction.OUT;
-            } else if(targetType.equals("event") && vertexType.equals("location")) {
-                direction = Direction.IN;
-            } else if(targetType.equals("location") && vertexType.equals("event")) {
-                direction = Direction.OUT;
-            } else {
-                intelligenceGraph.commit();
-                results.add(new MappableVertex("Cannot get from vertex type " + vertexType + " to type " + targetType + "!"));
-                return results;
-            }
+            // if(targetType.equals("person") && vertexType.equals("event")) {
+            //     direction = Direction.IN;
+            // } else if(targetType.equals("event") && vertexType.equals("person")) {
+            //     direction = Direction.OUT;
+            // } else if(targetType.equals("event") && vertexType.equals("location")) {
+            //     direction = Direction.IN;
+            // } else if(targetType.equals("location") && vertexType.equals("event")) {
+            //     direction = Direction.OUT;
+            // } else {
+            //     intelligenceGraph.commit();
+            //     results.add(new MappableVertex("Cannot get from vertex type " + vertexType + " to type " + targetType + "!"));
+            //     return results;
+            // }
 
             Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
