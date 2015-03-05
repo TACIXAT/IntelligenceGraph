@@ -116,7 +116,9 @@ public class LifeTemplate {
 								.has("name", "notes")
 								.vertices().iterator();
 		while(itv.hasNext()) {
-			itv.next();
+			Vertex vertex = itv.next();
+			if(count > 0)
+				intelligenceGraph.removeVertex(vertex);
 			count++;
 		}
 		System.out.println("NOTES COUNT: " + count);
@@ -134,7 +136,7 @@ public class LifeTemplate {
 		// // PERSON --has-- ATTR:NOTES
 		// intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
 		// intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
-		// intelligenceGraph.commit();
+		intelligenceGraph.commit();
 		return;
 	}
 }
