@@ -6,6 +6,8 @@ import com.tinkerpop.blueprints.Vertex;
 import com.thinkaurelius.titan.core.Cardinality;
 import com.thinkaurelius.titan.core.attribute.Geoshape;
 
+import java.util.Iterator;
+
 public class LifeTemplate {
 	public static void initializeGraph(TitanGraph intelligenceGraph) {
 		intelligenceGraph.makePropertyKey("type").dataType(String.class).make();
@@ -108,10 +110,16 @@ public class LifeTemplate {
 		// intelligenceGraph.makePropertyKey("notes").dataType(String.class).make();
 
 		// ATTR:NOTES
-		System.out.println("NOTES COUNT: " + intelligenceGraph.query()
+		int count = 0;
+		Iterator<Vertex> itv = intelligenceGraph.query()
 								.has("type", "property")
 								.has("name", "notes")
-								.count());
+								.vertices().iterator();
+		while(itv.hasNext()) {
+			itv.next();
+			count++;
+		}
+		System.out.println("NOTES COUNT: " + count);
 
 		// Vertex locationVertex = intelligenceGraph.query()
 		// 						.has("type", "schema")
