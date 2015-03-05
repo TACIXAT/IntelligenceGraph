@@ -409,7 +409,7 @@ public class IntelligenceGraph {
         for(Vertex v : schemaVertices) {
             System.out.println(v.getProperty("name"));
             if(v.getProperty("name").equals(vertexType)) {
-                System.out.println("Name Match!");
+                // System.out.println("Name Match!");
                 target = v;
                 break;
             }
@@ -994,26 +994,32 @@ public class IntelligenceGraph {
         if(target != null) {
             String vertexType = vertex.getProperty("type");
 
+            // directions are backward since we search by labels then check if 
+            // returned vertices are connected to original
             Direction direction = Direction.BOTH;
-            // if(targetType.equals("person") && vertexType.equals("event")) {
-            //     direction = Direction.IN;
-            // } else if(targetType.equals("event") && vertexType.equals("person")) {
-            //     direction = Direction.OUT;
-            // } else if(targetType.equals("event") && vertexType.equals("location")) {
-            //     direction = Direction.IN;
-            // } else if(targetType.equals("location") && vertexType.equals("event")) {
-            //     direction = Direction.OUT;
-            // } else {
-            //     intelligenceGraph.commit();
-            //     results.add(new MappableVertex("Cannot get from vertex type " + vertexType + " to type " + targetType + "!"));
-            //     return results;
-            // }
+            if(targetType.equals("person") && vertexType.equals("event")) {
+                direction = Direction.OUT;
+            } else if(targetType.equals("event") && vertexType.equals("person")) {
+                direction = Direction.IN;
+            } else if(targetType.equals("event") && vertexType.equals("location")) {
+                direction = Direction.OUT;
+            } else if(targetType.equals("location") && vertexType.equals("event")) {
+                direction = Direction.IN;
+            } else {
+                intelligenceGraph.commit();
+                results.add(new MappableVertex("Cannot get from " + vertexType + " to " + targetType + "!"));
+                return results;
+            }
 
             Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
             
-            TitanVertexQuery vertexQuery = vertex.query();
-            vertexQuery.direction(direction);
+            Query vertexQuery = intelligenceGraph.query();
+            // vertexQuery.direction(direction);
             
+            System.out.println(vertexType);
+            System.out.println(username);
+            System.out.println(targetType);
+
             vertexQuery.has("owner", username);
             vertexQuery.has("type", targetType);
             
@@ -1043,7 +1049,13 @@ public class IntelligenceGraph {
 
             Iterable<Vertex> vertices = vertexQuery.vertices();
             for(Vertex v : vertices) {
-                results.add(new MappableVertex(v));
+                Iterable<Vertex> itv = v.getVertices(direction, "connectedTo");
+                for(Vertex neighbor : itv) {
+                    if(neighbor.getId() == vertexId) {
+                        results.add(new MappableVertex(v));
+                        break;
+                    }
+                }
             }
         } else {
             results.add(new MappableVertex("Could not find a valid schema for provided type!"));
