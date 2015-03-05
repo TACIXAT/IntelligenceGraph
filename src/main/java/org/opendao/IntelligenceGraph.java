@@ -1049,8 +1049,10 @@ public class IntelligenceGraph {
 
             Iterable<Vertex> vertices = vertexQuery.vertices();
             for(Vertex v : vertices) {
+                System.out.println(v);
                 Iterable<Vertex> itv = v.getVertices(direction, "connectedTo");
                 for(Vertex neighbor : itv) {
+                    System.out.println(neighbor);
                     if(neighbor.getId() == vertexId) {
                         results.add(new MappableVertex(v));
                         break;
