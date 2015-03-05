@@ -115,27 +115,30 @@ public class LifeTemplate {
 								.has("type", "property")
 								.has("name", "notes")
 								.vertices().iterator();
+		Vertex notesPropertyVertex = null;
 		while(itv.hasNext()) {
 			Vertex vertex = itv.next();
 			if(count > 0)
 				intelligenceGraph.removeVertex(vertex);
+			else
+				notesPropertyVertex = vertex;
 			count++;
 		}
 		System.out.println("NOTES COUNT: " + count);
 
-		// Vertex locationVertex = intelligenceGraph.query()
-		// 						.has("type", "schema")
-		// 						.has("name", "location")
-		// 						.vertices().iterator().next();
+		Vertex locationVertex = intelligenceGraph.query()
+								.has("type", "schema")
+								.has("name", "location")
+								.vertices().iterator().next();
 
-		// Vertex eventVertex = intelligenceGraph.query()
-		// 						.has("type", "schema")
-		// 						.has("name", "event")
-		// 						.vertices().iterator().next();
+		Vertex eventVertex = intelligenceGraph.query()
+								.has("type", "schema")
+								.has("name", "event")
+								.vertices().iterator().next();
 
-		// // PERSON --has-- ATTR:NOTES
-		// intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
-		// intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
+		// PERSON --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
+		intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
 		intelligenceGraph.commit();
 		return;
 	}
