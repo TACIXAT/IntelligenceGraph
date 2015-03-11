@@ -328,12 +328,10 @@ public class IntelligenceGraph {
         if(dataType.equals("text")) {
             return value;
         } else if (dataType.equals("date")) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                Date date = format.parse(value);
-                long timestamp = date.getTime();
-                return new Long(timestamp);
-            } catch(ParseException e) {
+                Long timestamp = Long.parseLong(value);
+                return timestamp;
+            } catch(NumberFormatException e) {
                 return null;
             }
         } else if(dataType.equals("geopoint")) {
