@@ -483,7 +483,8 @@ public class IntelligenceGraph {
 
             Iterable<Vertex> vertices = vertexQuery.vertices();
             for(Vertex v : vertices) {
-                results.add(new MappableVertex(v));
+                Iterable<Vertex> neighbors = v.getVertices(Direction.BOTH, "connectedTo"); 
+                results.add(new MappableVertex(v, neighbors));
             }
         } else {
             results.add(new MappableVertex("Could not find a valid schema for provided type!"));
@@ -641,7 +642,8 @@ public class IntelligenceGraph {
                 }
             }
 
-            result = new MappableVertex(vertex);
+            Iterable<Vertex> neighbors = vertex.getVertices(Direction.BOTH, "connectedTo"); 
+            result = new MappableVertex(vertex, neighbors);
         } else {
             result = new MappableVertex("Could not find a valid schema for provided type!");
         }
@@ -1052,7 +1054,8 @@ public class IntelligenceGraph {
                 for(Vertex neighbor : itv) {
                     // System.out.println(neighbor);
                     if(neighbor.getId().equals(vertexId)) {
-                        results.add(new MappableVertex(v));
+                        Iterable<Vertex> vertexNeighbors = v.getVertices(Direction.BOTH, "connectedTo"); 
+                        results.add(new MappableVertex(v, vertexNeighbors));
                         break;
                     }
                 }
@@ -1128,7 +1131,8 @@ public class IntelligenceGraph {
         Iterable<Vertex> vertices = vertex.getVertices(direction, "connectedTo"); 
 
         for(Vertex v : vertices) {
-            results.add(new MappableVertex(v));
+            Iterable<Vertex> vertexNeighbors = v.getVertices(Direction.BOTH, "connectedTo"); 
+            results.add(new MappableVertex(v, vertexNeighbors));
         }
 
         results.add(new MappableVertex(vertex));

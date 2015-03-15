@@ -1,8 +1,13 @@
 package org.opendao.IntelligenceGraph;
 
 import com.tinkerpop.blueprints.Vertex;
+
+import java.lang.Iterable;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,6 +21,8 @@ public class MappableVertex {
 	@JsonDeserialize(as=Map.class, contentAs=String.class, keyAs=String.class)
     @XmlElement(name = "properties") 
 	private Map<String, String> propertyMap;
+	@XmlElement(name = "neighbors")
+	private List<MappableVertex> neighbors = new ArrayList<MappableVertex>();
 
 	public MappableVertex() {
 		// intentionally blank
@@ -26,6 +33,17 @@ public class MappableVertex {
 		System.out.println(vertex.getId().getClass().getName());
 		this.id = (Long)vertex.getId();
 		this.propertyMap = getMapFromVertex(vertex);
+		this.neighbors = null;
+	}
+
+	public MappableVertex(Vertex vertex, Iterable<Vertex> neighbors) {
+		this.vertex = vertex;
+		System.out.println(vertex.getId().getClass().getName());
+		this.id = (Long)vertex.getId();
+		this.propertyMap = getMapFromVertex(vertex);
+		for(Vertex v : neighbors) {
+			this.neighbors.add(new MappableVertex(v));
+		}
 	}
 
 	public MappableVertex(String error) {
