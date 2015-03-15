@@ -22,7 +22,7 @@ public class MappableVertex {
     @XmlElement(name = "properties") 
 	private Map<String, String> propertyMap;
 	@XmlElement(name = "neighbors")
-	private List<MappableVertex> neighbors = new ArrayList<MappableVertex>();
+	private List<Long> neighbors = new ArrayList<Long>();
 
 	public MappableVertex() {
 		// intentionally blank
@@ -42,7 +42,7 @@ public class MappableVertex {
 		this.id = (Long)vertex.getId();
 		this.propertyMap = getMapFromVertex(vertex);
 		for(Vertex v : neighbors) {
-			this.neighbors.add(new MappableVertex(v));
+			this.neighbors.add((Long)v.getId());
 		}
 	}
 
