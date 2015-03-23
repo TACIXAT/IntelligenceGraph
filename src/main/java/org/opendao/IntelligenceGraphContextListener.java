@@ -22,14 +22,16 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 	@Override
 	public void contextInitialized(ServletContextEvent contextEvent) {
 		System.out.println("ServletContextListener started");	
-		String basePath = "/tmp/intelligence_graph/";
+		String basePath = "/socialite_graph/";
 		
 		// create or load graph
 		Configuration conf = new BaseConfiguration();
 		conf.setProperty("storage.directory", basePath);
-		conf.setProperty("storage.backend", "berkeleyje");
-		conf.setProperty("storage.index.search.backend", "lucene");
-		conf.setProperty("storage.index.search.directory", "/tmp/searchindex");
+		conf.setProperty("storage.backend", "cassandra");
+		conf.setProperty("storage.hostname", "127.0.0.1");
+		conf.setProperty("storage.index.search.backend", "elasticsearch");
+		conf.setProperty("storage.index.search.client-only", "elasticsearch");
+		conf.setProperty("storage.index.search.hostname", "127.0.0.1");
 		intelligenceGraph = TitanFactory.open(conf);
 
 		if(Iterables.size(intelligenceGraph.getVertices("type", "user")) < 1) {
