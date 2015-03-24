@@ -10,8 +10,8 @@ import java.util.Iterator;
 
 public class LifeTemplate {
 	public static void initializeGraph(TitanGraph intelligenceGraph) {
-		intelligenceGraph.makePropertyKey("type").dataType(String.class).make();
 		intelligenceGraph.makePropertyKey("owner").dataType(String.class).make();
+		intelligenceGraph.makePropertyKey("type").dataType(String.class).make();
 		intelligenceGraph.makePropertyKey("apiKey").dataType(String.class).cardinality(Cardinality.SINGLE).make();
 		intelligenceGraph.makePropertyKey("name").dataType(String.class).make();
 		intelligenceGraph.makePropertyKey("born").dataType(Long.class).make();
