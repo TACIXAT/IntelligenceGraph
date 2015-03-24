@@ -26,6 +26,7 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 		
 		// create or load graph
 		Configuration conf = new BaseConfiguration();
+		conf.setProperty("storage.machine-id", "aws-graph");
 		conf.setProperty("storage.directory", basePath);
 		conf.setProperty("storage.backend", "cassandra");
 		conf.setProperty("storage.hostname", "127.0.0.1");
