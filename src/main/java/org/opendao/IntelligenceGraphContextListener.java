@@ -34,7 +34,7 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 		conf.setProperty("storage.index.search.hostname", "127.0.0.1");
 		intelligenceGraph = TitanFactory.open(conf);
 
-		if(Iterables.size(intelligenceGraph.getVertices("type", "user")) < 1) {
+		if(Iterables.size(intelligenceGraph.getVertices("type", "schema")) < 1) {
 			intelligenceGraph.commit();
 			LifeTemplate.initializeGraph(intelligenceGraph);
 		}
