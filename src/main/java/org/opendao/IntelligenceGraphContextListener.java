@@ -22,7 +22,7 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 	@Override
 	public void contextInitialized(ServletContextEvent contextEvent) {
 		System.out.println("ServletContextListener started");	
-		String basePath = "/graph/";
+		String basePath = "/graph_socialite/";
 		
 		// create or load graph
 		Configuration conf = new BaseConfiguration();
