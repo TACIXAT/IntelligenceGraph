@@ -31,6 +31,7 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 		conf.setProperty("storage.directory", basePath);
 		conf.setProperty("storage.backend", "cassandra");
 		conf.setProperty("storage.hostname", "127.0.0.1");
+		conf.setProperty("storage.port","9159");
 		conf.setProperty("storage.index.search.backend", "elasticsearch");
 		conf.setProperty("storage.index.search.client-only", "elasticsearch");
 		conf.setProperty("storage.index.search.hostname", "127.0.0.1");
