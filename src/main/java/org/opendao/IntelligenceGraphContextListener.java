@@ -22,19 +22,32 @@ public class IntelligenceGraphContextListener implements ServletContextListener{
 	@Override
 	public void contextInitialized(ServletContextEvent contextEvent) {
 		System.out.println("ServletContextListener started");	
-		String basePath = "/graph_socialite/";
 		
 		// create or load graph
 		Configuration conf = new BaseConfiguration();
-		conf.setProperty("storage.machine-id", "aws-graph");
-		conf.setProperty("storage.machine-id-appendix", "4747");
-		conf.setProperty("storage.directory", basePath);
+		// conf.setProperty("storage.machine-id", "aws-graph");
+		// conf.setProperty("storage.machine-id-appendix", "4747");
+
 		conf.setProperty("storage.backend", "cassandra");
-		conf.setProperty("storage.hostname", "127.0.0.1");
-		conf.setProperty("storage.port","9159");
+		conf.setProperty("storage.hostname", "172.31.37.42");
+
 		conf.setProperty("storage.index.search.backend", "elasticsearch");
 		conf.setProperty("storage.index.search.client-only", "elasticsearch");
-		conf.setProperty("storage.index.search.hostname", "127.0.0.1");
+		conf.setProperty("storage.index.search.hostname", "172.31.37.42");
+
+		conf.setProperty("cache.db-cache", "true");
+		conf.setProperty("cache.db-cache-clean-wait", "50");
+		conf.setProperty("cache.db-cache-time", "10000");
+		conf.setProperty("cache.db-cache-size", "0.25");
+
+		conf.setProperty("storage.index.search.backend", "elasticsearch");
+		conf.setProperty("storage.index.search.hostname", "172.31.37.42");
+		conf.setProperty("storage.index.search.cluster-name", "socialite");
+		conf.setProperty("storage.index.search.index-name", "titan");
+		conf.setProperty("storage.index.search.client-only", "true");
+		conf.setProperty("storage.index.search.sniff", "false");
+		conf.setProperty("storage.index.search.local-mode", "false");
+
 		intelligenceGraph = TitanFactory.open(conf);
 
 		if(Iterables.size(intelligenceGraph.getVertices("type", "schema")) < 1) {
