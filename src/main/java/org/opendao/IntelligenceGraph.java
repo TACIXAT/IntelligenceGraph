@@ -36,6 +36,7 @@ import com.tinkerpop.blueprints.Direction;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.core.attribute.Geoshape;
 import com.thinkaurelius.titan.core.attribute.Geo;
+import com.thinkaurelius.titan.core.attribute.Cmp;
 import com.thinkaurelius.titan.core.attribute.Text;
 import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.TitanVertexQuery;
@@ -328,11 +329,30 @@ public class IntelligenceGraph {
         if(dataType.equals("text")) {
             return value;
         } else if (dataType.equals("date")) {
-            try {
-                Long timestamp = Long.parseLong(value);
-                return timestamp;
-            } catch(NumberFormatException e) {
-                return null;
+            if(value.indexOf("[") < 0) {
+                try {
+                    Long timestamp = Long.parseLong(value);
+                    return timestamp;
+                } catch(NumberFormatException e) {
+                    return null;
+                }
+            } else {
+                String[] values = value.replaceAll("[\\[\\]]", "").split(",");
+                if(values.length != 2)
+                    return null;
+
+                String rangeStart = values[0];
+                String rangeEnd = values[1];
+
+                try {
+                    Long start = Long.parseLong(rangeStart);
+                    Long end = Long.parseLong(rangeEnd);
+                    DatePair datePair = new DatePair(start, end);
+                    return datePair;
+                } catch(NumberFormatException e) {
+                    return null;
+                }
+
             }
         } else if(dataType.equals("geopoint")) {
             String [] split = value.split(",");
@@ -471,12 +491,17 @@ public class IntelligenceGraph {
                         if(value == null)
                             continue;
 
-                        if(dataType.equals("geocircle"))
+                        if(dataType.equals("geocircle")) {
                             vertexQuery.has(key, Geo.WITHIN, value);
-                        else if(key.equals("notes"))
+                        } else if(key.equals("notes")) {
                             vertexQuery.has(key, Text.CONTAINS, value);
-                        else
+                        } else if((key.equals("born") || key.equals("date")) && strValue.indexOf("[") > -1) { 
+                            DatePair datePair = (DatePair) value;
+                            vertexQuery.has(key, Cmp.GREATER_THAN_EQUAL, datePair.getStart());
+                            vertexQuery.has(key, Cmp.LESS_THAN_EQUAL, datePair.getEnd());
+                        } else {
                             vertexQuery.has(key, value);
+                        }
                     }
                 }
             }
