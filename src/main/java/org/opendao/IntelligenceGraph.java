@@ -955,13 +955,13 @@ public class IntelligenceGraph {
         return result;
     }
 
-    // searchNeighbors
-    // requires: apiKey, vertex, type, properties...
+    // searchConnectedTo
+    // requires: apiKey, vertices, type, properties...
     @POST
-    @Path("search_neighbors")
+    @Path("search_connected_to")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<MappableVertex> searchNeighbors(HashMap<String, String> properties) {
+    public List<MappableVertex> searchConnectedTo(HashMap<String, String> properties) {
         System.out.println(properties);
         List<MappableVertex> results = new ArrayList<MappableVertex>();
         TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
@@ -979,28 +979,40 @@ public class IntelligenceGraph {
             return results;
         }
 
-        if(!properties.containsKey("vertex")) {
-            results.add(new MappableVertex("Please provide a vertex ID!"));
+        if(!properties.containsKey("vertices")) {
+            results.add(new MappableVertex("Please provide vertices!"));
             return results;
         }
 
-        Long vertexId;
+        List<Long> vertexIds = new ArrayList();
 
         try {
-            vertexId = Long.parseLong(properties.get("vertex"));
+            String[] stringVertexIds = properties.get("vertices").split(",");
+            for(String stringVertexId : stringVertexIds) {
+                Long vertexId = Long.parseLong(stringVertexId);
+                if(vertexIds.indexOf(vertexId) != -1) {
+                    results.add(new MappableVertex("Duplicate vertex IDs sent!"));
+                    return results;
+                }
+                vertexIds.add(vertexId);
+            }
         } catch (NumberFormatException e) {
             results.add(new MappableVertex("Problem parsing vertex ID!"));
             return results;
         }
 
-        TitanVertex vertex = (TitanVertex)intelligenceGraph.getVertex(vertexId);
-
-        if(vertex != null && !vertex.getProperty("owner").equals(username)) {
-            vertex = null;
+        List<TitanVertex> connectedToVertices = new ArrayList();
+        for(Long vertexId : vertexIds) {
+            TitanVertex vertex = (TitanVertex)intelligenceGraph.getVertex(vertexId);
+            if(vertex == null || !vertex.getProperty("owner").equals(username)) {
+                connectedToVertices = null;
+                break;
+            }
+            connectedToVertices.add(vertex);
         }
 
-        if(vertex == null) {
-            results.add(new MappableVertex("Vertex not found!"));
+        if(connectedToVertices == null) {
+            results.add(new MappableVertex("Some vertices were not found!"));
             intelligenceGraph.commit();
             return results;
         }        
@@ -1017,23 +1029,16 @@ public class IntelligenceGraph {
         Vertex target = getSchemaVertexByType(intelligenceGraph, targetType);
 
         if(target != null) {
-            String vertexType = vertex.getProperty("type");
+            for(Vertex connectedToVertex : connectedToVertices) {
+                String vertexType = connectedToVertex.getProperty("type");
 
-            // directions are backward since we search by labels then check if 
-            // returned vertices are connected to original
-            Direction direction = Direction.BOTH;
-            if(targetType.equals("person") && vertexType.equals("event")) {
-                direction = Direction.OUT;
-            } else if(targetType.equals("event") && vertexType.equals("person")) {
-                direction = Direction.IN;
-            } else if(targetType.equals("event") && vertexType.equals("location")) {
-                direction = Direction.OUT;
-            } else if(targetType.equals("location") && vertexType.equals("event")) {
-                direction = Direction.IN;
-            } else {
-                intelligenceGraph.commit();
-                results.add(new MappableVertex("Cannot get from " + vertexType + " to " + targetType + "!"));
-                return results;
+                if(targetType.equals("location") && vertexType.equals("person") || 
+                    targetType.equals("person") && vertexType.equals("location") || 
+                    targetType.equals(vertexType)) {
+                    intelligenceGraph.commit();
+                    results.add(new MappableVertex("Cannot get from " + vertexType + " to " + targetType + "!"));
+                    return results;
+                }
             }
 
             Map<String, String> validProperties = getValidProperties(intelligenceGraph, target);
@@ -1041,7 +1046,6 @@ public class IntelligenceGraph {
             Query vertexQuery = intelligenceGraph.query();
             // vertexQuery.direction(direction);
             
-            System.out.println(vertexType);
             System.out.println(username);
             System.out.println(targetType);
 
@@ -1072,17 +1076,24 @@ public class IntelligenceGraph {
                 }
             }
 
+            // query based on labels for candidates
             Iterable<Vertex> vertices = vertexQuery.vertices();
-            for(Vertex v : vertices) {
-                // System.out.println(v);
-                Iterable<Vertex> itv = v.getVertices(direction, "connectedTo");
-                for(Vertex neighbor : itv) {
-                    // System.out.println(neighbor);
-                    if(neighbor.getId().equals(vertexId)) {
-                        Iterable<Vertex> vertexNeighbors = v.getVertices(Direction.BOTH, "connectedTo"); 
-                        results.add(new MappableVertex(v, vertexNeighbors));
-                        break;
+            for(Vertex candidate : vertices) {
+                Iterable<Vertex> candidateNeighbors = candidate.getVertices(Direction.BOTH, "connectedTo");
+                int matched = 0;
+                for(Vertex neighbor : candidateNeighbors) {
+                    for(Vertex connectedToVertex : connectedToVertices) {
+                        Long vertexId = (Long)connectedToVertex.getId();
+                        if(neighbor.getId().equals(vertexId)) {
+                            matched += 1;
+                            break;
+                        }
                     }
+                }
+
+                if(matched == connectedToVertices.size()) {
+                    candidateNeighbors = candidate.getVertices(Direction.BOTH, "connectedTo"); 
+                    results.add(new MappableVertex(candidate, candidateNeighbors));
                 }
             }
         } else {
