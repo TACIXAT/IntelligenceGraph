@@ -493,7 +493,7 @@ public class IntelligenceGraph {
 
                         if(dataType.equals("geocircle")) {
                             vertexQuery.has(key, Geo.WITHIN, value);
-                        } else if(key.equals("notes")) {
+                        } else if(key.equals("notes") || key.equals("name")) {
                             vertexQuery.has(key, Text.CONTAINS, value);
                         } else if((key.equals("born") || key.equals("date")) && strValue.indexOf("[") > -1) { 
                             DatePair datePair = (DatePair) value;

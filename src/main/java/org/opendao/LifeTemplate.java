@@ -69,6 +69,9 @@ public class LifeTemplate {
 		// LOCATION --has-- ATTR:GEOLOC
 		intelligenceGraph.addEdge(null, locationVertex, geoPropertyVertex, "has");
 
+		// LOCATION --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");		
+
 		// EVENT
 		Vertex eventVertex = intelligenceGraph.addVertex(null);
 		eventVertex.setProperty("type", "schema");
@@ -85,6 +88,9 @@ public class LifeTemplate {
 
 		// EVENT --has-- ATTR:DATE
 		intelligenceGraph.addEdge(null, eventVertex, datePropertyVertex, "has");
+
+		// EVENT --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
 
 		// PERSON --connects-- EVENT
 		intelligenceGraph.addEdge(null, personVertex, eventVertex, "connects");
@@ -107,39 +113,27 @@ public class LifeTemplate {
 	}
 
 	public static void updateGraph(TitanGraph intelligenceGraph) {
-		// intelligenceGraph.makePropertyKey("notes").dataType(String.class).make();
-
 		// ATTR:NOTES
-		// int count = 0;
-		// Iterator<Vertex> itv = intelligenceGraph.query()
-		// 						.has("type", "property")
-		// 						.has("name", "notes")
-		// 						.vertices().iterator();
-		// Vertex notesPropertyVertex = null;
-		// while(itv.hasNext()) {
-		// 	Vertex vertex = itv.next();
-		// 	if(count > 0)
-		// 		intelligenceGraph.removeVertex(vertex);
-		// 	else
-		// 		notesPropertyVertex = vertex;
-		// 	count++;
-		// }
-		// System.out.println("NOTES COUNT: " + count);
+		Vertex notesPropertyVertex = intelligenceGraph.query()
+								.has("type", "property")
+								.has("name", "notes")
+								.vertices().iterator().next();
 
-		// Vertex locationVertex = intelligenceGraph.query()
-		// 						.has("type", "schema")
-		// 						.has("name", "location")
-		// 						.vertices().iterator().next();
+		Vertex locationVertex = intelligenceGraph.query()
+								.has("type", "schema")
+								.has("name", "location")
+								.vertices().iterator().next();
 
-		// Vertex eventVertex = intelligenceGraph.query()
-		// 						.has("type", "schema")
-		// 						.has("name", "event")
-		// 						.vertices().iterator().next();
+		Vertex eventVertex = intelligenceGraph.query()
+								.has("type", "schema")
+								.has("name", "event")
+								.vertices().iterator().next();
 
-		// // PERSON --has-- ATTR:NOTES
-		// intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
-		// intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
-		// intelligenceGraph.commit();
+		// LOCATION --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
+		// EVENT --has-- ATTR:NOTES
+		intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
+		intelligenceGraph.commit();
 		return;
 	}
 }
