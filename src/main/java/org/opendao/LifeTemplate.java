@@ -114,26 +114,26 @@ public class LifeTemplate {
 
 	public static void updateGraph(TitanGraph intelligenceGraph) {
 		// ATTR:NOTES
-		Vertex notesPropertyVertex = intelligenceGraph.query()
-								.has("type", "property")
-								.has("name", "notes")
-								.vertices().iterator().next();
+		// Vertex notesPropertyVertex = intelligenceGraph.query()
+		// 						.has("type", "property")
+		// 						.has("name", "notes")
+		// 						.vertices().iterator().next();
 
-		Vertex locationVertex = intelligenceGraph.query()
-								.has("type", "schema")
-								.has("name", "location")
-								.vertices().iterator().next();
+		// Vertex locationVertex = intelligenceGraph.query()
+		// 						.has("type", "schema")
+		// 						.has("name", "location")
+		// 						.vertices().iterator().next();
 
-		Vertex eventVertex = intelligenceGraph.query()
-								.has("type", "schema")
-								.has("name", "event")
-								.vertices().iterator().next();
+		// Vertex eventVertex = intelligenceGraph.query()
+		// 						.has("type", "schema")
+		// 						.has("name", "event")
+		// 						.vertices().iterator().next();
 
-		// LOCATION --has-- ATTR:NOTES
-		intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
-		// EVENT --has-- ATTR:NOTES
-		intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
-		intelligenceGraph.commit();
+		// // LOCATION --has-- ATTR:NOTES
+		// intelligenceGraph.addEdge(null, locationVertex, notesPropertyVertex, "has");
+		// // EVENT --has-- ATTR:NOTES
+		// intelligenceGraph.addEdge(null, eventVertex, notesPropertyVertex, "has");
+		// intelligenceGraph.commit();
 		return;
 	}
 }
