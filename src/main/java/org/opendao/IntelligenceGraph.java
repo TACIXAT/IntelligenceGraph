@@ -316,7 +316,8 @@ public class IntelligenceGraph {
                 }
             }
 
-            result = new MappableVertex(newVertex);
+            Iterable<Vertex> neighbors = newVertex.getVertices(Direction.BOTH, "connectedTo"); 
+            result = new MappableVertex(newVertex, neighbors);
         } else {
             result = new MappableVertex("Could not find a valid schema for provided type!");
         }
