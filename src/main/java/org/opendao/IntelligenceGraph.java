@@ -800,8 +800,8 @@ public class IntelligenceGraph {
         }
 
         if(connects) {
-            result.put("status", "ERROR");
-            result.put("ERROR", "Edge already exists between these vertices!");
+            result.put("status", "SUCCESS");
+            result.put("SUCCESS", "Edge already exists between these vertices!");
             intelligenceGraph.commit();
             return result;
         }
