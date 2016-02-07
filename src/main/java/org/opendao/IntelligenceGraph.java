@@ -186,6 +186,10 @@ public class IntelligenceGraph {
         return result;
     }    
 
+    // deleteUser
+        // delete user vertex
+        // delete vertices .has('owner', username)
+
     // createGroup
 
     // addUserToGroup
@@ -1103,6 +1107,40 @@ public class IntelligenceGraph {
 
         intelligenceGraph.commit();
         return results;
+    }
+
+     // getVertexNeighbors
+    // requires: apiKey, vertex, direction
+    @POST
+    @Path("count_user_vertices")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<MappableVertex> countUserVertices(HashMap<String, String> properties) {
+        System.out.println(properties);
+        List<MappableVertex> results = new ArrayList<MappableVertex>();
+        TitanGraph intelligenceGraph = (TitanGraph)context.getAttribute("INTELLIGENCE_GRAPH");
+
+        if(!properties.containsKey("apiKey")) {
+            results.add(new MappableVertex("Please provide an API Key!"));
+            return results;
+        }
+
+        String apiKey = (String)properties.get("apiKey");
+        String username = getUsername(intelligenceGraph, apiKey);
+
+        if(username == null) {
+            results.add(new MappableVertex("API Key not found!"));
+            return results;
+        }
+
+        Query vertexQuery = intelligenceGraph.query();
+        vertexQuery.has("owner", username);
+        int count = Iterables.size(vertexQuery.vertices());
+        results.add(new MappableVertex(count));
+
+        intelligenceGraph.commit();
+        return results;
+
     }
 
     // getVertexNeighbors

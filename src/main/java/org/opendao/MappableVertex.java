@@ -53,6 +53,13 @@ public class MappableVertex {
 		this.propertyMap.put("error", error);
 	}
 
+	public MappableVertex(Integer count) {
+		this.vertex = null;
+		this.id = -2l;
+		this.propertyMap = new HashMap<String, String>();
+		this.propertyMap.put("count", count.toString());
+	}
+
 	public Map<String, String> getMapFromVertex(Vertex vertex) {
         Map<String, String> vertexMap = new HashMap<String, String>();
         for(String key : vertex.getPropertyKeys()) {
